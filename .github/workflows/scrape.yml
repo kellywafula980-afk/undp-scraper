@@ -1,0 +1,46 @@
+name: Automated Data Scraping
+
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: '0 */6 * * *'
+  # Allow manual trigger from GitHub UI
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Run sports scraper
+      run: |
+        python manage.py scrape_sports
+      env:
+        DJANGO_SETTINGS_MODULE: core.settings
+    
+    - name: Run scholarship scraper
+      run: |
+        python manage.py scrape_scholarships
+      env:
+        DJANGO_SETTINGS_MODULE: core.settings
+    
+    - name: Commit and push if changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add -A
+        git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update scraped data [skip ci]"
+        git push
