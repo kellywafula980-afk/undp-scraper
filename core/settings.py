@@ -64,3 +64,6 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Google Search Console verification
+GOOGLE_SITE_VERIFICATION = 'google56bce93523ece129.html'
